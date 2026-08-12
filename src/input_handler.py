@@ -10,7 +10,7 @@ def input_handler(name = "Value", low = -9.9e100, high = 9.9e100, Type = "str", 
             if Type == "str":
                 x = input(f"{name}: ").lower()
 
-                if not x:
+                if x:
                     if x in options or not options:
                         return x
 
@@ -18,17 +18,19 @@ def input_handler(name = "Value", low = -9.9e100, high = 9.9e100, Type = "str", 
                         print("The answer was not expected !\t", "Expected answer: ", [options[i] for i in range(len(options))])
 
                 else:
-                    return default
+                    return default.lower()
 
             else:
-                x = data_type[Type](input(f"{name}: "))
+                x = input(f"{name}: ")
 
-                if not x: 
+                if x: 
+                    x = data_type[Type](x)
+
                     if low <= x <= high:
                         return x
                     
                     else:
-                        print("Out of range ! \t", low, "to", high)
+                        print("Out of range ! \t", low, "to", high, "\n")
 
                 else:
                     return default
