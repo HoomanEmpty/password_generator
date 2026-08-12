@@ -1,4 +1,4 @@
-def input_handler(name = "Value", low = -9.9e100, high = 9.9e100, Type = "str"):
+def input_handler(name = "Value", low = -9.9e100, high = 9.9e100, Type = "str", options = []):
     data_type = {
         "str" : str,
         "float" : float,
@@ -8,8 +8,12 @@ def input_handler(name = "Value", low = -9.9e100, high = 9.9e100, Type = "str"):
     while True:
         try:
             if Type == "str":
-                return input(f"{name}: ")
+                x = input(f"{name}: ").lower()
+                if x in options or not options:
+                    return x
 
+                else:
+                    print("The answer was not expected !\t", "Expected answer: ", [options[i] for i in range(len(options))])
             else:
                 x = data_type[Type](input(f"{name}: "))
                 if low <= x <= high:
