@@ -1,4 +1,5 @@
 from random import randint as ri
+from input_handler import input_handler
 
 letters = "abcdefghijklmnopqrstuvwxyz"
 symbols = "!@#$%^&*()_+-={[}]\\/:;|,.<>?'"
@@ -22,7 +23,6 @@ def password_generator(items, lenght, probabilities = -1):
 
             if random <= 0:
                 password += items[j]
-                items = items.replace(items[j], "")
                 break
 
     return password
@@ -36,17 +36,17 @@ def mixer(include_symbols, include_numbers):
 
     return mixed
 
-lenght = int(input("Lenght(8): "))
-include_symbols = input("Include symbols(Y/n): ").lower()
-include_numbers = input("Include numbers(Y/n): ").lower()
-how_many_repeat = int(input("How many passwords do you want(1): "))
+lenght = input_handler("Password Lenght(8) ", low = 1, Type = "int", default = 8)
+include_symbols = input_handler("Include symbols(Y/n) ", options=["y", "n"], default = "y")
+include_numbers = input_handler("Include symbols(Y/n) ", options=["y", "n"], default = "y")
+how_many_repeat = input_handler("How many passwords do you want(1) ", low = 1, Type = "int", default = 1)
 
 include_symbols = False if include_symbols == "n" else True
 include_numbers = False if include_numbers == "n" else True
 
 items = mixer(include_symbols, include_numbers)
 
-print("\n")
+print()
 for i in range(how_many_repeat):
     print(password_generator(items, lenght = lenght))
 
