@@ -83,7 +83,7 @@ def show_password(path):
         key = info_reader["key"][i].encode()
         encrypted = info_reader["encrypted_password"][i].encode()
         password = encrypt.decoding(key, encrypted)
-        print(f"{i}_ {password}")
+        print(f"{i + 1}_ {password}")
 
 
 option = input_handler("[C]reate new password or [s]how past password(C/s)", options=["c", "s"], default="c")
@@ -108,7 +108,7 @@ if option == "c":
 
     print("\nCopy any passwords you want because they will be encrypted after saving.")
 
-    want_save = input_handler("\nWrite the number of things you want to save with a space(everything = Enter, nothing = 0)", low=0, high=len(password), default=password)
+    want_save = input_handler("\nWrite the number of things you want to save with a space(everything = Enter, nothing = 0)", low=0, high=len(password), default=password, automate=False)
     save_password(0, password) if want_save == 0 else save_password(want_save, password)
     print("Your voice save in: ", Path.cwd().joinpath("output.Jaraare"))
 
