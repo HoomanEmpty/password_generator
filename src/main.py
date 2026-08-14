@@ -74,8 +74,6 @@ def save_password(want_save, password):
         file.write(json.dumps(password_dict))
 
 def show_password(path):
-    passwords = list()
-
     with open(path, "r") as file:
         info_reader = file.read()
 
