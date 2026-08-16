@@ -53,7 +53,7 @@ def mixer(include_symbols, include_numbers): # todo: can add items for customiza
 
     return mixed
 
-def save_password(want_save, password):
+def save_password(want_save, password, path):
     '''
     save passwords in json file where program is running
 
@@ -81,8 +81,12 @@ def save_password(want_save, password):
             else:
                 save.append(password[int(number_saver) - 1])
                 number_saver = ""
-    if Path.exists(Path.cwd().joinpath("output.Jaraare")):
-        with open(Path.cwd().joinpath("output.Jaraare"), "r") as file:
+
+    if Path.exists(path): # check the in the path have file or not
+        '''
+        read file and turn into dict
+        '''
+        with open(path) as file:
             info_reader = file.read()
 
         password_dict = json.loads(info_reader)
@@ -96,8 +100,8 @@ def save_password(want_save, password):
         key, encrypted_password = encrypt.encoding(item)
         password_dict["encrypted_password"].append(encrypted_password.decode())
         password_dict["key"].append(key.decode())
-        
-    with open("output.Jaraare", "w") as file: # save encrypted passwords & keys where program is running
+
+    with open(path, "w") as file: # save encrypted passwords & keys where path
         file.write(json.dumps(password_dict))
 
 def show_password(path):
@@ -142,10 +146,11 @@ if option == "c":
 
     # saving section
     want_save = input_handler("\nWrite the number of things you want to save with a space(everything = Enter, nothing = 0)", low=0, high=len(password), default=password, automate=False)
-    save_password(0, password) if want_save == 0 else save_password(want_save, password)
-    print("Your voice save in: ", Path.cwd().joinpath("output.Jaraare"))
+    path = Path(input_handler("Enter path where you want save passwords", default=Path.cwd(), automate=False)).joinpath("output.Jaraare")
+    save_password(0, password, path) if want_save == 0 else save_password(want_save, password, path)
+    print("Your voice save in: ", Path(path).joinpath("output.Jaraare"))
 
 else:
     # showing section
-    path = input_handler("Enter path your save password or contintue default", default=Path.cwd().joinpath("output.Jaraare"), automate=False)
+    path = Path(input_handler("Enter path your save password or contintue default", default=Path.cwd(), automate=False)).joinpath("output.Jaraare")
     show_password(path)
