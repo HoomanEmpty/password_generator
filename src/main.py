@@ -81,17 +81,23 @@ def save_password(want_save, password):
             else:
                 save.append(password[int(number_saver) - 1])
                 number_saver = ""
+    if Path.exists(Path.cwd().joinpath("output.Jaraare")):
+        with open(Path.cwd().joinpath("output.Jaraare"), "r") as file:
+            info_reader = file.read()
 
-    password_dict = {"encrypted_password" : [],
-                     "key" : []
-                    } 
+        password_dict = json.loads(info_reader)
+        
+    else:
+        password_dict = {"encrypted_password" : [],
+                        "key" : []
+                        }
     
     for item in save: # encrypt password for saving (with saving their keys)
         key, encrypted_password = encrypt.encoding(item)
         password_dict["encrypted_password"].append(encrypted_password.decode())
         password_dict["key"].append(key.decode())
         
-    with open("output.Jaraare", "a") as file: # save encrypted passwords & keys where program is running
+    with open("output.Jaraare", "w") as file: # save encrypted passwords & keys where program is running
         file.write(json.dumps(password_dict))
 
 def show_password(path):
