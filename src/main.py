@@ -4,24 +4,32 @@ import encrypt
 from pathlib import Path
 import json
 
+# password include these
 letters = "abcdefghijklmnopqrstuvwxyz"
 symbols = "!@#$%^&*()_+-={[}]\\/:;|,.<>?'"
 numbers = "0123456789"
 
 def password_generator(items, lenght, probabilities = -1):
+    '''
+    generate password with custom lenght and 
+    custom probabilities and 
+    choose include symbols & numbers or not.
+    this function return string var 
+    '''
+
     password = ""
 
-    if probabilities == -1:
+    if probabilities == -1: # give same chance for every character in item
         probabilities = []
         for i in items:
             probabilities.append(10)
     
-    total = sum(probabilities)
+    total = sum(probabilities) # sum chance from every character
 
-    for i in range(lenght):
+    for i in range(lenght): # generate password with choose character with it's chance
         random = ri(0, total)
 
-        for j in range(len(items)):
+        for j in range(len(items)):# choose character with it's chance
             random -= probabilities[j]
 
             if random <= 0:
@@ -30,7 +38,13 @@ def password_generator(items, lenght, probabilities = -1):
 
     return password
 
-def mixer(include_symbols, include_numbers):
+def mixer(include_symbols, include_numbers): # todo: can add items for customizable combine.
+    '''
+    it mixes symbols, numbers, and letters based on our choice of which ones to mix
+
+    this function return string var
+    '''
+
     global letters, symbols, numbers
 
     mixed = letters
@@ -40,20 +54,27 @@ def mixer(include_symbols, include_numbers):
     return mixed
 
 def save_password(want_save, password):
+    '''
+    save passwords in json file where program is running
+
+    for now this program save key and encrypted passwords and it's not safe
+
+    this function doesn't return anythings
+    '''
     save = []
-    if want_save == password:
+    if want_save == password: # save all passwords that are created
         save = password
 
-    elif want_save == 0:
+    elif want_save == 0: # save nothing
         return 0
     
-    elif want_save:
+    elif want_save: # save passwords that user choose 
+        # todo , and more space handler for better feel
         number_saver = ""
 
-        for i in range(len(want_save)):
+        for i in range(len(want_save)): # understand what want user to save
             if want_save[i] != " ":
                 number_saver += want_save[i]
-
                 if i + 1 >= len(want_save):
                     save.append(password[int(number_saver) - 1])
 
@@ -65,30 +86,35 @@ def save_password(want_save, password):
                      "key" : []
                     } 
     
-    for item in save:
+    for item in save: # encrypt password for saving (with saving their keys)
         key, encrypted_password = encrypt.encoding(item)
         password_dict["encrypted_password"].append(encrypted_password.decode())
         password_dict["key"].append(key.decode())
         
-    with open("output.Jaraare", "a") as file:
+    with open("output.Jaraare", "a") as file: # save encrypted passwords & keys where program is running
         file.write(json.dumps(password_dict))
 
 def show_password(path):
-    with open(path, "r") as file:
+    '''
+    show passwords that save
+    this function doesn't return anythings
+    '''
+    with open(path, "r") as file: # go to the path that you tell it (or default path) and reads file
         info_reader = file.read()
 
-    info_reader = json.loads(info_reader)
+    info_reader = json.loads(info_reader) # turn json file to dict in python
 
-    for i in range(len(info_reader["encrypted_password"])):
+    for i in range(len(info_reader["encrypted_password"])): # show passwords that we save
         key = info_reader["key"][i].encode()
         encrypted = info_reader["encrypted_password"][i].encode()
         password = encrypt.decoding(key, encrypted)
         print(f"{i + 1}_ {password}")
 
-
+#choose between create new passwords or show previous passwords
 option = input_handler("[C]reate new password or [s]how past password(C/s)", options=["c", "s"], default="c")
 
 if option == "c":
+    # settings for create passwords
     lenght = input_handler("Password Lenght(8)", low = 1, Type = "int", default = 8)
     include_symbols = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y")
     include_numbers = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y")
@@ -99,19 +125,21 @@ if option == "c":
 
     items = mixer(include_symbols, include_numbers)
 
-    print()
+    print() # for ui
     password = []
 
-    for i in range(how_many_repeat):
+    for i in range(how_many_repeat): # create passwords with setting that we choose and show
         password.append(password_generator(items, lenght = lenght))
         print(f"{i + 1}- {password[i]}")
 
     print("\nCopy any passwords you want because they will be encrypted after saving.")
 
+    # saving section
     want_save = input_handler("\nWrite the number of things you want to save with a space(everything = Enter, nothing = 0)", low=0, high=len(password), default=password, automate=False)
     save_password(0, password) if want_save == 0 else save_password(want_save, password)
     print("Your voice save in: ", Path.cwd().joinpath("output.Jaraare"))
 
 else:
+    # showing section
     path = input_handler("Enter path your save password or contintue default", default=Path.cwd().joinpath("output.Jaraare"), automate=False)
     show_password(path)
