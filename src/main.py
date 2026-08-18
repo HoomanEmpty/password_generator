@@ -2,7 +2,6 @@ from random import randint as ri
 from input_handler import input_handler
 import encrypt
 from pathlib import Path
-import json
 
 # password include these
 letters = "abcdefghijklmnopqrstuvwxyz"
@@ -84,25 +83,21 @@ def save_password(want_save, password, path):
 
     if Path.exists(path): # check the in the path have file or not
         '''
-        read file and turn into dict
+        read file and turn into list
         '''
         with open(path) as file:
-            info_reader = file.read()
+            password_list = file.read()
 
-        password_dict = json.loads(info_reader)
-        
     else:
-        password_dict = {"encrypted_password" : [],
-                        "key" : []
-                        }
-    
+        password_list = []
+
     for item in save: # encrypt password for saving (with saving their keys)
-        key, encrypted_password = encrypt.encoding(item)
-        password_dict["encrypted_password"].append(encrypted_password.decode())
-        password_dict["key"].append(key.decode())
+        password_list.append(encrypt.encoding(item))
 
     with open(path, "w") as file: # save encrypted passwords & keys where path
-        file.write(json.dumps(password_dict))
+        for item in password_list:
+            
+            file.write(item)
 
 def show_password(path):
     '''
@@ -110,16 +105,12 @@ def show_password(path):
     this function doesn't return anythings
     '''
     with open(path, "r") as file: # go to the path that you tell it (or default path) and reads file
-        info_reader = file.read()
+        info_reader = file.read()# turn json file to dict in python
 
-    info_reader = json.loads(info_reader) # turn json file to dict in python
-
-    for i in range(len(info_reader["encrypted_password"])): # show passwords that we save
-        key = info_reader["key"][i].encode()
-        encrypted = info_reader["encrypted_password"][i].encode()
-        password = encrypt.decoding(key, encrypted)
-        print(f"{i + 1}_ {password}")
-
+    passwords = encrypt.decoding(info_reader)
+    for i in range(len(passwords)):
+        print(f"{i}_ {passwords[i]}")
+        
 #choose between create new passwords or show previous passwords
 option = input_handler("[C]reate new password or [s]how past password(C/s)", options=["c", "s"], default="c")
 
