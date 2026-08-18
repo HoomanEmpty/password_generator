@@ -81,20 +81,11 @@ def save_password(want_save, password, path):
                 save.append(password[int(number_saver) - 1])
                 number_saver = ""
 
-    if Path.exists(path): # check the in the path have file or not
-        '''
-        read file and turn into list
-        '''
-        with open(path) as file:
-            password_list = file.read()
-
-    else:
-        password_list = []
-
+    password_list = []
     for item in save: # encrypt password for saving (with saving their keys)
         password_list.append(encrypt.encoding(item))
 
-    with open(path, "w") as file: # save encrypted passwords & keys where path
+    with open(path, "a") as file: # save encrypted passwords & keys where path
         for item in password_list:
             
             file.write(item)
@@ -109,7 +100,7 @@ def show_password(path):
 
     passwords = encrypt.decoding(info_reader)
     for i in range(len(passwords)):
-        print(f"{i}_ {passwords[i]}")
+        print(f"{i + 1}_ {passwords[i]}")
         
 #choose between create new passwords or show previous passwords
 option = input_handler("[C]reate new password or [s]how past password(C/s)", options=["c", "s"], default="c")
