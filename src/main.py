@@ -7,6 +7,7 @@ from pathlib import Path
 letters = "abcdefghijklmnopqrstuvwxyz"
 symbols = "!@#$%^&*()_+-={[}]\\/:;|,.<>?'"
 numbers = "0123456789"
+uppercase_letters = letters.upper()
 
 def password_generator(items, lenght, probabilities = -1):
     '''
@@ -37,18 +38,19 @@ def password_generator(items, lenght, probabilities = -1):
 
     return password
 
-def mixer(include_symbols, include_numbers): # todo: can add items for customizable combine.
+def mixer(include_symbols, include_numbers, have_uppercase_letters): # todo: can add items for customizable combine.
     '''
     it mixes symbols, numbers, and letters based on our choice of which ones to mix
 
     this function return string var
     '''
 
-    global letters, symbols, numbers
+    global letters, symbols, numbers, uppercase_letters
 
     mixed = letters
-    mixed = mixed + symbols if include_symbols == True else letters
-    mixed = mixed + numbers if include_numbers == True else mixed
+    mixed = mixed + symbols if include_symbols else letters
+    mixed = mixed + numbers if include_numbers else mixed
+    mixed = mixed + uppercase_letters if have_uppercase_letters else mixed
 
     return mixed
 
@@ -110,12 +112,14 @@ if option == "c":
     lenght = input_handler("Password Lenght(8)", low = 1, Type = "int", default = 8)
     include_symbols = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y")
     include_numbers = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y")
+    have_uppercase_letters = input_handler("Passwords have uppercase letters(Y/n)", options=["y", "n"], default="y")
     how_many_repeat = input_handler("How many passwords do you want(10)", low = 1, Type = "int", default = 10)
 
     include_symbols = False if include_symbols == "n" else True
     include_numbers = False if include_numbers == "n" else True
+    have_uppercase_letters = False if have_uppercase_letters == "n" else True
 
-    items = mixer(include_symbols, include_numbers)
+    items = mixer(include_symbols, include_numbers, have_uppercase_letters)
 
     print() # for ui
     password = []
