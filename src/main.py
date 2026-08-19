@@ -8,6 +8,7 @@ letters = "abcdefghijklmnopqrstuvwxyz"
 symbols = "!@#$%^&*()_+-={[}]\\/:;|,.<>?'"
 numbers = "0123456789"
 uppercase_letters = letters.upper()
+similar_letters = ["o", "O", "0", "I", "l", "C", "X", "Z", "V", "M", "S", "K", "W", "U", "P"]
 
 def password_generator(items, lenght, probabilities = -1):
     '''
@@ -38,19 +39,23 @@ def password_generator(items, lenght, probabilities = -1):
 
     return password
 
-def mixer(include_symbols, include_numbers, have_uppercase_letters): # todo: can add items for customizable combine.
+def mixer(include_symbols, include_numbers, have_uppercase_letters, remove_similar):
     '''
-    it mixes symbols, numbers, and letters based on our choice of which ones to mix
+    it mixes symbols, numbers, and letters (include uppercase & lowercase by user choose) based on our choice of which ones to mix
 
-    this function return string var
+    this function return string var that name is mixed and include mix of words that custom by user
     '''
 
-    global letters, symbols, numbers, uppercase_letters
+    global letters, symbols, numbers, uppercase_letters, similar_letters
 
     mixed = letters
     mixed = mixed + symbols if include_symbols else letters
     mixed = mixed + numbers if include_numbers else mixed
     mixed = mixed + uppercase_letters if have_uppercase_letters else mixed
+
+    if remove_similar:
+        for i in similar_letters: # remove similar words
+            mixed = mixed.replace(i, "")
 
     return mixed
 
@@ -113,13 +118,15 @@ if option == "c":
     include_symbols = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y")
     include_numbers = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y")
     have_uppercase_letters = input_handler("Passwords have uppercase letters(Y/n)", options=["y", "n"], default="y")
+    remove_similar = input_handler("Do you want remove similar word(y/N)", options=["y", "n"], default="n")
     how_many_repeat = input_handler("How many passwords do you want(10)", low = 1, Type = "int", default = 10)
 
     include_symbols = False if include_symbols == "n" else True
     include_numbers = False if include_numbers == "n" else True
     have_uppercase_letters = False if have_uppercase_letters == "n" else True
+    remove_similar = False if remove_similar == "n" else True
 
-    items = mixer(include_symbols, include_numbers, have_uppercase_letters)
+    items = mixer(include_symbols, include_numbers, have_uppercase_letters, remove_similar)
 
     print() # for ui
     password = []
@@ -127,6 +134,15 @@ if option == "c":
     for i in range(how_many_repeat): # create passwords with setting that we choose and show
         password.append(password_generator(items, lenght = lenght))
         print(f"{i + 1}- {password[i]}")
+
+    print() #for ui
+
+    if remove_similar:
+        if have_uppercase_letters:
+            print("All letters that are similar in uppercase and lowercase are considered, and all symbols, numbers, and letters that are similar in lowercase are removed.")
+
+        else:
+            print("All similar symbols, numbers, and letters have been removed.")
 
     print("\nCopy any passwords you want because they will be encrypted after saving.")
 
