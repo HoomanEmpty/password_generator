@@ -71,10 +71,7 @@ def save_password(want_save, password, path):
     if want_save == password: # save all passwords that are created
         save = password
 
-    elif want_save == 0: # save nothing
-        return 0
-    
-    elif want_save: # save passwords that user choose 
+    else: # save passwords that user choose 
         # todo , and more space handler for better feel
         number_saver = ""
 
@@ -114,17 +111,17 @@ option = input_handler("[C]reate new password or [s]how past password(C/s)", opt
 
 if option == "c":
     # settings for create passwords
-    lenght = input_handler("Password Lenght(8)", low = 1, Type = "int", default = 8)
-    include_symbols = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y")
-    include_numbers = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y")
-    have_uppercase_letters = input_handler("Passwords have uppercase letters(Y/n)", options=["y", "n"], default="y")
-    remove_similar = input_handler("Do you want remove similar word(y/N)", options=["y", "n"], default="n")
-    how_many_repeat = input_handler("How many passwords do you want(10)", low = 1, Type = "int", default = 10)
+    lenght = input_handler("Password Lenght(8)", low = 1, Type = "int", default = 8) # lenght of passwords
+    include_symbols = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y") # have symbols or not
+    include_numbers = input_handler("Include number(Y/n)", options=["y", "n"], default = "y") # have numbers or not
+    have_uppercase_letters = input_handler("Passwords have uppercase letters(Y/n)", options=["y", "n"], default="y") # have uppercase letters or not
+    remove_similar = input_handler("Do you want remove similar word(y/N)", options=["y", "n"], default="n") # remove similar words or not
+    how_many_repeat = input_handler("How many passwords do you want(10)", low = 1, Type = "int", default = 10) # how many password you want
 
-    include_symbols = False if include_symbols == "n" else True
-    include_numbers = False if include_numbers == "n" else True
-    have_uppercase_letters = False if have_uppercase_letters == "n" else True
-    remove_similar = False if remove_similar == "n" else True
+    include_symbols = False if include_symbols == "n" else True # Check symbol
+    include_numbers = False if include_numbers == "n" else True # Check number
+    have_uppercase_letters = False if have_uppercase_letters == "n" else True # Check uppercase
+    remove_similar = False if remove_similar == "n" else True #Check remove similar
 
     items = mixer(include_symbols, include_numbers, have_uppercase_letters, remove_similar)
 
@@ -148,9 +145,14 @@ if option == "c":
 
     # saving section
     want_save = input_handler("\nWrite the number of things you want to save with a space(everything = Enter, nothing = 0)", low=0, high=len(password), default=password, automate=False)
-    path = Path(input_handler("Enter path where you want save passwords", default=Path.cwd(), automate=False)).joinpath("output.Jaraare")
-    save_password(0, password, path) if want_save == 0 else save_password(want_save, password, path)
-    print("Your voice save in: ", Path(path).joinpath("output.Jaraare"))
+
+    if want_save == "0":
+        print("I hope you have a better password next time!!!!")
+
+    else:
+        path = Path(input_handler("Enter path where you want save passwords", default=Path.cwd(), automate=False)).joinpath("output.Jaraare")
+        save_password(want_save, password, path)
+        print("Your voice save in: ", Path(path).joinpath("output.Jaraare"))
 
 else:
     # showing section
