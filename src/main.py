@@ -73,17 +73,18 @@ def save_password(want_save, password, path):
 
     else: # save passwords that user choose 
         # todo , and more space handler for better feel
-        number_saver = ""
+        want_save = want_save.split()
+        for i in want_save:
+            save.append(password[int(i) - 1])
+        # for i in range(len(want_save)): # understand what want user to save
+        #     if want_save[i] != " ":
+        #         number_saver += want_save[i]
+        #         if i + 1 >= len(want_save):
+        #             save.append(password[int(number_saver) - 1])
 
-        for i in range(len(want_save)): # understand what want user to save
-            if want_save[i] != " ":
-                number_saver += want_save[i]
-                if i + 1 >= len(want_save):
-                    save.append(password[int(number_saver) - 1])
-
-            else:
-                save.append(password[int(number_saver) - 1])
-                number_saver = ""
+        #     else:
+        #         save.append(password[int(number_saver) - 1])
+        #         number_saver = ""
 
     password_list = []
     for item in save: # encrypt password for saving (with saving their keys)
