@@ -72,7 +72,7 @@ def save_password(want_save, password, path):
         save = password
 
     else: # save passwords that user choose 
-        # todo , and more space handler for better feel
+        want_save = want_save.replace(",", " ")
         want_save = want_save.split()
         for i in want_save:
             save.append(password[int(i) - 1])
