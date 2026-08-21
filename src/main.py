@@ -3,7 +3,7 @@ from input_handler import input_handler
 import encrypt
 from pathlib import Path
 
-# password include these
+# Password include these
 letters = "abcdefghijklmnopqrstuvwxyz"
 symbols = "!@#$%^&*()_+-={[}]\\/:;|,.<>?'"
 numbers = "0123456789"
@@ -12,7 +12,7 @@ similar_letters = ["o", "O", "0", "I", "l", "C", "X", "Z", "V", "M", "S", "K", "
 
 def password_generator(items, lenght, probabilities = -1):
     '''
-    generate password with custom lenght and 
+    Generate password with custom lenght and 
     custom probabilities and 
     choose include symbols & numbers or not.
     this function return string var 
@@ -20,17 +20,17 @@ def password_generator(items, lenght, probabilities = -1):
 
     password = ""
 
-    if probabilities == -1: # give same chance for every character in item
+    if probabilities == -1: # Give same chance for every character in item
         probabilities = []
         for i in items:
             probabilities.append(10)
     
-    total = sum(probabilities) # sum chance from every character
+    total = sum(probabilities) # Sum chance from every character
 
-    for i in range(lenght): # generate password with choose character with it's chance
+    for i in range(lenght): # Generate password with choose character with it's chance
         random = ri(0, total)
 
-        for j in range(len(items)):# choose character with it's chance
+        for j in range(len(items)):# Choose character with it's chance
             random -= probabilities[j]
 
             if random <= 0:
@@ -41,7 +41,7 @@ def password_generator(items, lenght, probabilities = -1):
 
 def mixer(include_symbols, include_numbers, have_uppercase_letters, remove_similar):
     '''
-    it mixes symbols, numbers, and letters (include uppercase & lowercase by user choose) based on our choice of which ones to mix
+    It mixes symbols, numbers, and letters (include uppercase & lowercase by user choose) based on our choice of which ones to mix
 
     this function return string var that name is mixed and include mix of words that custom by user
     '''
@@ -54,7 +54,7 @@ def mixer(include_symbols, include_numbers, have_uppercase_letters, remove_simil
     mixed = mixed + uppercase_letters if have_uppercase_letters else mixed
 
     if remove_similar:
-        for i in similar_letters: # remove similar words
+        for i in similar_letters: # Remove similar words
             mixed = mixed.replace(i, "")
 
     return mixed
@@ -68,56 +68,47 @@ def save_password(want_save, password, path):
     this function doesn't return anythings
     '''
     save = []
-    if want_save == password: # save all passwords that are created
+    if want_save == password: # Save all passwords that are created
         save = password
 
-    else: # save passwords that user choose 
+    else: # Save passwords that user choose 
         want_save = want_save.replace(",", " ")
         want_save = want_save.split()
         for i in want_save:
             save.append(password[int(i) - 1])
-        # for i in range(len(want_save)): # understand what want user to save
-        #     if want_save[i] != " ":
-        #         number_saver += want_save[i]
-        #         if i + 1 >= len(want_save):
-        #             save.append(password[int(number_saver) - 1])
-
-        #     else:
-        #         save.append(password[int(number_saver) - 1])
-        #         number_saver = ""
 
     password_list = []
-    for item in save: # encrypt password for saving (with saving their keys)
+    for item in save: # Encrypt password for saving (with saving their keys)
         password_list.append(encrypt.encoding(item))
 
-    with open(path, "a") as file: # save encrypted passwords & keys where path
+    with open(path, "a") as file: # Save encrypted passwords & keys where path
         for item in password_list:
             
             file.write(item)
 
 def show_password(path):
     '''
-    show passwords that save
+    Show passwords that save
     this function doesn't return anythings
     '''
-    with open(path, "r") as file: # go to the path that you tell it (or default path) and reads file
-        info_reader = file.read()# turn json file to dict in python
+    with open(path, "r") as file: # Go to the path that you tell it (or default path) and reads file
+        info_reader = file.read()# Turn json file to dict in python
 
     passwords = encrypt.decoding(info_reader)
     for i in range(len(passwords)):
         print(f"{i + 1}_ {passwords[i]}")
         
-#choose between create new passwords or show previous passwords
+# Choose between create new passwords or show previous passwords
 option = input_handler("[C]reate new password or [s]how past password(C/s)", options=["c", "s"], default="c")
 
 if option == "c":
-    # settings for create passwords
-    lenght = input_handler("Password Lenght(8)", low = 1, Type = "int", default = 8) # lenght of passwords
-    include_symbols = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y") # have symbols or not
-    include_numbers = input_handler("Include number(Y/n)", options=["y", "n"], default = "y") # have numbers or not
-    have_uppercase_letters = input_handler("Passwords have uppercase letters(Y/n)", options=["y", "n"], default="y") # have uppercase letters or not
-    remove_similar = input_handler("Do you want remove similar word(y/N)", options=["y", "n"], default="n") # remove similar words or not
-    how_many_repeat = input_handler("How many passwords do you want(10)", low = 1, Type = "int", default = 10) # how many password you want
+    # Settings for create passwords
+    lenght = input_handler("Password Lenght(8)", low = 1, Type = "int", default = 8) # Lenght of passwords
+    include_symbols = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y") # Have symbols or not
+    include_numbers = input_handler("Include number(Y/n)", options=["y", "n"], default = "y") # Have numbers or not
+    have_uppercase_letters = input_handler("Passwords have uppercase letters(Y/n)", options=["y", "n"], default="y") # Have uppercase letters or not
+    remove_similar = input_handler("Do you want remove similar word(y/N)", options=["y", "n"], default="n") # Remove similar words or not
+    how_many_repeat = input_handler("How many passwords do you want(10)", low = 1, Type = "int", default = 10) # How many password you want
 
     include_symbols = False if include_symbols == "n" else True # Check symbol
     include_numbers = False if include_numbers == "n" else True # Check number
@@ -126,25 +117,31 @@ if option == "c":
 
     items = mixer(include_symbols, include_numbers, have_uppercase_letters, remove_similar)
 
-    print() # for ui
+    print() # For ui.
     password = []
 
-    for i in range(how_many_repeat): # create passwords with setting that we choose and show
+    for i in range(how_many_repeat): # Create passwords with setting that we choose and show.
         password.append(password_generator(items, lenght = lenght))
         print(f"{i + 1}- {password[i]}")
 
-    print() #for ui
+    print() #For ui.
 
-    if remove_similar:
-        if have_uppercase_letters:
-            print("All letters that are similar in uppercase and lowercase are considered, and all symbols, numbers, and letters that are similar in lowercase are removed.")
+    if remove_similar: # More explain for password if user want remove similar things.
+        if have_uppercase_letters and include_symbols:
+            print("All uppercase and lowercase letters are considered lowercase, and all symbols, and letters that are similar in lowercase are removed.")
+
+        elif have_uppercase_letters:
+            print("All uppercase and lowercase letters are considered lowercase.")
+
+        elif include_symbols:
+            print("All similar symbols, and letters have been removed.")
 
         else:
             print("All similar symbols, numbers, and letters have been removed.")
 
     print("\nCopy any passwords you want because they will be encrypted after saving.")
 
-    # saving section
+    # Saving section.
     want_save = input_handler("\nWrite the number of things you want to save with a space(everything = Enter, nothing = 0)", low=0, high=len(password), default=password, automate=False)
 
     if want_save == "0":
@@ -156,6 +153,6 @@ if option == "c":
         print("Your voice save in: ", Path(path).joinpath("output.Jaraare"))
 
 else:
-    # showing section
+    # Showing section.
     path = Path(input_handler("Enter path your save password or contintue default", default=Path.cwd(), automate=False)).joinpath("output.Jaraare")
     show_password(path)
