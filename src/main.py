@@ -105,7 +105,7 @@ def main():
 
         try:
             # The option to choose between creating new passwords or showing previously made passwords
-            option = input_handler("[G]enerate new password or [s]how previously made passwords? ([G]/s)", options=["g", "s"], default="g")
+            option = input_handler("\n[G]enerate new password or [s]how previously made passwords? ([G]/s)", options=["g", "s"], default="g")
 
             if option == "g":
                 # Settings for password creation
