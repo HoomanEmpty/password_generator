@@ -15,7 +15,7 @@ def input_handler(name = "Value", low = -9.9e100, high = 9.9e100, Type = "str", 
                         return x
 
                     else:
-                        print("\nThe answer was not expected !\t", "Expected answer: ", [options[i] for i in range(len(options))])
+                        print("\nThe answer was not expected!", "Expected answer(s): ", [options[i] for i in range(len(options))])
 
                 else:
 
