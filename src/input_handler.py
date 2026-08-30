@@ -15,7 +15,7 @@ def input_handler(name = "Value", low = -9.9e100, high = 9.9e100, Type = "str", 
                         return x
 
                     else:
-                        print("The answer was not expected !\t", "Expected answer: ", [options[i] for i in range(len(options))])
+                        print("\nThe answer was not expected !\t", "Expected answer: ", [options[i] for i in range(len(options))])
 
                 else:
 
@@ -34,7 +34,7 @@ def input_handler(name = "Value", low = -9.9e100, high = 9.9e100, Type = "str", 
                         return x
                     
                     else:
-                        print("Out of range ! \t", low, "to", high, "\n")
+                        print("\nOut of range! Please enter a value between ", low, "and ", high, "\n") 
 
                 else:
                     return default
