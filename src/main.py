@@ -20,17 +20,17 @@ def password_generator(items, lenght, probabilities = -1):
 
     password = ""
 
-    if probabilities == -1: # Give same chance for every character in item
+    if probabilities == -1: # Give the same chance to every character in item
         probabilities = []
         for i in items:
             probabilities.append(10)
     
-    total = sum(probabilities) # Sum chance from every character
+    total = sum(probabilities) # The sum of chances of every character
 
-    for i in range(lenght): # Generate password with choose character with it's chance
+    for i in range(lenght): # Generate the password with the choose character's chance
         random = ri(0, total)
 
-        for j in range(len(items)):# Choose character with it's chance
+        for j in range(len(items)): # Choose a character based on it's chance
             random -= probabilities[j]
 
             if random <= 0:
@@ -54,7 +54,7 @@ def mixer(include_symbols, include_numbers, have_uppercase_letters, remove_simil
     mixed = mixed + uppercase_letters if have_uppercase_letters else mixed
 
     if remove_similar:
-        for i in similar_letters: # Remove similar words
+        for i in similar_letters: # Remove similar letters
             mixed = mixed.replace(i, "")
 
     return mixed
@@ -68,20 +68,20 @@ def save_password(want_save, password, path):
     this function doesn't return anythings
     '''
     save = []
-    if want_save == password: # Save all passwords that are created
+    if want_save == password: # Save all of the created passwords
         save = password
 
-    else: # Save passwords that user choose 
+    else: # Save the password(s) that user has choosen
         want_save = want_save.replace(",", " ")
         want_save = want_save.split()
         for i in want_save:
             save.append(password[int(i) - 1])
 
     password_list = []
-    for item in save: # Encrypt password for saving (with saving their keys)
+    for item in save: # Encrypt the password(s) for saving (with the keys also being saved)
         password_list.append(encrypt.encoding(item))
 
-    with open(path, "a") as file: # Save encrypted passwords & keys where path
+    with open(path, "a") as file: # Save encrypted passwords & keys in the choosen path
         for item in password_list:
             
             file.write(item)
@@ -91,42 +91,42 @@ def show_password(path):
     Show passwords that save
     this function doesn't return anythings
     '''
-    with open(path, "r") as file: # Go to the path that you tell it (or default path) and reads file
-        info_reader = file.read()# Turn json file to dict in python
+    with open(path, "r") as file: # Goes to the path that you enter (otherwise the default path) and reads the file
+        info_reader = file.read() # Turns json file into a python dict
 
     passwords = encrypt.decoding(info_reader)
     for i in range(len(passwords)):
         print(f"{i + 1}_ {passwords[i]}")
         
-# Choose between create new passwords or show previous passwords
-option = input_handler("[C]reate new password or [s]how past password(C/s)", options=["c", "s"], default="c")
+# Choose between creating new passwords or showing previously made passwords
+option = input_handler("[C]reate new password or show [p]reviously made passwords(C/p)", options=["c", "p"], default="c")
 
 if option == "c":
-    # Settings for create passwords
-    lenght = input_handler("Password Lenght(8)", low = 1, Type = "int", default = 8) # Lenght of passwords
-    include_symbols = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y") # Have symbols or not
-    include_numbers = input_handler("Include number(Y/n)", options=["y", "n"], default = "y") # Have numbers or not
-    have_uppercase_letters = input_handler("Passwords have uppercase letters(Y/n)", options=["y", "n"], default="y") # Have uppercase letters or not
-    remove_similar = input_handler("Do you want remove similar word(y/N)", options=["y", "n"], default="n") # Remove similar words or not
-    how_many_repeat = input_handler("How many passwords do you want(10)", low = 1, Type = "int", default = 10) # How many password you want
+    # Settings for password creation
+    lenght = input_handler("Password Lenght(8)", low = 1, Type = "int", default = 8) # The lenght of passwords
+    include_symbols = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y") # Include symbols or not
+    include_numbers = input_handler("Include number(Y/n)", options=["y", "n"], default = "y") # Include numbers or not
+    have_uppercase_letters = input_handler("Include uppercase letters(Y/n)", options=["y", "n"], default="y") # Include uppercase letters or not
+    remove_similar = input_handler("Should similiar looking letters be avoided? (e.g w and W) (y/N)", options=["y", "n"], default="n") # Avoid similar letters or not
+    how_many_repeat = input_handler("How many passwords do you want to generate? [10]", low = 1, Type = "int", default = 10) # How many passwords to generate
 
-    include_symbols = False if include_symbols == "n" else True # Check symbol
-    include_numbers = False if include_numbers == "n" else True # Check number
-    have_uppercase_letters = False if have_uppercase_letters == "n" else True # Check uppercase
-    remove_similar = False if remove_similar == "n" else True #Check remove similar
+    include_symbols = False if include_symbols == "n" else True # Checks symbol
+    include_numbers = False if include_numbers == "n" else True # Checks number
+    have_uppercase_letters = False if have_uppercase_letters == "n" else True # Checks uppercase
+    remove_similar = False if remove_similar == "n" else True #Checks remove similar
 
     items = mixer(include_symbols, include_numbers, have_uppercase_letters, remove_similar)
 
-    print() # For ui.
+    print() # For indentation purposes.
     password = []
 
-    for i in range(how_many_repeat): # Create passwords with setting that we choose and show.
+    for i in range(how_many_repeat): # Creates the passwords with the specified settings and show those settings.
         password.append(password_generator(items, lenght = lenght))
         print(f"{i + 1}- {password[i]}")
 
-    print() #For ui.
+    print() # For indentation purposes.
 
-    if remove_similar: # More explain for password if user want remove similar things.
+    if remove_similar: # Gives detailed explanation about the options if user want similiar letters to be avoided.
         if have_uppercase_letters and include_symbols:
             print("All uppercase and lowercase letters are considered lowercase, and all symbols, and letters that are similar in lowercase are removed.")
 
