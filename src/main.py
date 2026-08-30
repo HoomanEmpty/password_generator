@@ -54,7 +54,7 @@ def mixer(include_symbols, include_numbers, have_uppercase_letters, remove_simil
     mixed = mixed + uppercase_letters if have_uppercase_letters else mixed
 
     if remove_similar:
-        for i in similar_letters: # Remove similar letters
+        for i in similar_letters: # Avoid similar letters
             mixed = mixed.replace(i, "")
 
     return mixed
@@ -68,7 +68,7 @@ def save_password(want_save, password, path):
     this function doesn't return anythings
     '''
     save = []
-    if want_save == password: # Save all of the created passwords
+    if want_save == password: # Save all of the generated passwords
         save = password
 
     else: # Save the password(s) that user has choosen
@@ -99,28 +99,28 @@ def show_password(path):
         print(f"{i + 1}_ {passwords[i]}")
         
 # Choose between creating new passwords or showing previously made passwords
-option = input_handler("[C]reate new password or show [p]reviously made passwords(C/p)", options=["c", "p"], default="c")
+option = input_handler("[G]enerate new password or [s]how previously made passwords? ([G]/s)", options=["g", "s"], default="g")
 
-if option == "c":
+if option == "g":
     # Settings for password creation
-    lenght = input_handler("Password Lenght(8)", low = 1, Type = "int", default = 8) # The lenght of passwords
-    include_symbols = input_handler("Include symbols(Y/n)", options=["y", "n"], default = "y") # Include symbols or not
-    include_numbers = input_handler("Include number(Y/n)", options=["y", "n"], default = "y") # Include numbers or not
-    have_uppercase_letters = input_handler("Include uppercase letters(Y/n)", options=["y", "n"], default="y") # Include uppercase letters or not
-    remove_similar = input_handler("Should similiar looking letters be avoided? (e.g w and W) (y/N)", options=["y", "n"], default="n") # Avoid similar letters or not
-    how_many_repeat = input_handler("How many passwords do you want to generate? [10]", low = 1, Type = "int", default = 10) # How many passwords to generate
+    lenght = input_handler("Password Lenght [8]", low = 1, Type = "int", default = 8) # The lenght of the password(s)
+    include_symbols = input_handler("Include symbols ([Y]/n)", options=["y", "n"], default = "y") # Include symbols or not
+    include_numbers = input_handler("Include number ([Y]/n)", options=["y", "n"], default = "y") # Include numbers or not
+    have_uppercase_letters = input_handler("Include uppercase letters ([Y]/n)", options=["y", "n"], default="y") # Include uppercase letters or not
+    remove_similar = input_handler("Should similiar looking letters be avoided? (e.g w and W) (Y/[n])", options=["y", "n"], default="n") # Avoid similar letters or not
+    how_many_repeat = input_handler("How many password(s )do you want to generate? [10]", low = 1, Type = "int", default = 10) # How many passwords to generate
 
     include_symbols = False if include_symbols == "n" else True # Checks symbol
     include_numbers = False if include_numbers == "n" else True # Checks number
     have_uppercase_letters = False if have_uppercase_letters == "n" else True # Checks uppercase
-    remove_similar = False if remove_similar == "n" else True #Checks remove similar
+    remove_similar = False if remove_similar == "n" else True #Checks avoiding similar letters
 
     items = mixer(include_symbols, include_numbers, have_uppercase_letters, remove_similar)
 
     print() # For indentation purposes.
     password = []
 
-    for i in range(how_many_repeat): # Creates the passwords with the specified settings and show those settings.
+    for i in range(how_many_repeat): # Generates the passwords with the specified settings and show those settings.
         password.append(password_generator(items, lenght = lenght))
         print(f"{i + 1}- {password[i]}")
 
@@ -128,29 +128,29 @@ if option == "c":
 
     if remove_similar: # Gives detailed explanation about the options if user want similiar letters to be avoided.
         if have_uppercase_letters and include_symbols:
-            print("All uppercase and lowercase letters are considered lowercase, and all symbols, and letters that are similar in lowercase are removed.")
+            print("All uppercase and lowercase letters are considered lowercase, and all symbols, and letters that are similar in lowercase were avoided.")
 
         elif have_uppercase_letters:
             print("All uppercase and lowercase letters are considered lowercase.")
 
         elif include_symbols:
-            print("All similar symbols, and letters have been removed.")
+            print("All similar symbols, and letters were avoided.")
 
         else:
-            print("All similar symbols, numbers, and letters have been removed.")
+            print("All similar symbols, numbers, and letters were avoided.")
 
-    print("\nCopy any passwords you want because they will be encrypted after saving.")
+    print("\nCopy any passwords you want to keep as plain text because they will be encrypted after saving.")
 
     # Saving section.
-    want_save = input_handler("\nWrite the number of things you want to save with a space(everything = Enter, nothing = 0)", low=0, high=len(password), default=password, automate=False)
+    want_save = input_handler("\nWrite the index of password(s) you want to save with a space (everything: Enter, None: = 0)", low=0, high=len(password), default=password, automate=False)
 
     if want_save == "0":
-        print("I hope you have a better password next time!!!!")
+        print("I hope I can provide better passwords next time!!!")
 
     else:
-        path = Path(input_handler("Enter path where you want save passwords", default=Path.cwd(), automate=False)).joinpath("output.Jaraare")
+        path = Path(input_handler("Enter the path where you want the password(s) to be saved", default=Path.cwd(), automate=False)).joinpath("output.Jaraare")
         save_password(want_save, password, path)
-        print("Your voice save in: ", Path(path).joinpath("output.Jaraare"))
+        print("Your password(s) have been saved in: ", Path(path).joinpath("output.Jaraare"))
 
 else:
     # Showing section.
