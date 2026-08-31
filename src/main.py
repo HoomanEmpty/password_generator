@@ -1,7 +1,10 @@
 from random import randint as ri
+
+from numpy import mod
 from input_handler import input_handler
 import encrypt
 from pathlib import Path
+import encrypt_mode
 
 # Password include these
 letters = "abcdefghijklmnopqrstuvwxyz"
@@ -59,7 +62,7 @@ def mixer(include_symbols, include_numbers, have_uppercase_letters, remove_simil
 
     return mixed
 
-def save_password(want_save, password, path):
+def save_password(want_save, password, path, mode):
     '''
     save passwords in json file where program is running
 
@@ -77,24 +80,18 @@ def save_password(want_save, password, path):
         for i in want_save:
             save.append(password[int(i) - 1])
 
-    password_list = []
-    for item in save: # Encrypt the password(s) for saving (with the keys also being saved)
-        password_list.append(encrypt.encoding(item))
+    passwords = encrypt_mode.Encoding(path, save).run_mode(mode)
 
     with open(path, "a") as file: # Save encrypted passwords & keys in the choosen path
-        for item in password_list:
-            
-            file.write(item)
+        file.write(passwords)
 
-def show_password(path):
+def show_password(path, mode="t"):
     '''
     Show passwords that save
     this function doesn't return anythings
     '''
-    with open(path, "r") as file: # Goes to the path that you enter (otherwise the default path) and reads the file
-        info_reader = file.read() # Turns json file into a python dict
-
-    passwords = encrypt.decoding(info_reader)
+    passwords = encrypt_mode.Decoding(path).run_mode("text")
+    
     for i in range(len(passwords)):
         print(f"{i + 1}_ {passwords[i]}")
         
@@ -107,8 +104,8 @@ if option == "g":
     include_symbols = input_handler("Include symbols ([Y]/n)", options=["y", "n"], default = "y") # Include symbols or not
     include_numbers = input_handler("Include number ([Y]/n)", options=["y", "n"], default = "y") # Include numbers or not
     have_uppercase_letters = input_handler("Include uppercase letters ([Y]/n)", options=["y", "n"], default="y") # Include uppercase letters or not
-    remove_similar = input_handler("Should similiar looking letters be avoided? (e.g w and W) (Y/[n])", options=["y", "n"], default="n") # Avoid similar letters or not
-    how_many_repeat = input_handler("How many password(s )do you want to generate? [10]", low = 1, Type = "int", default = 10) # How many passwords to generate
+    remove_similar = input_handler("Should similiar looking letters be avoided? (e.g w and W) (y/[N])", options=["y", "n"], default="n") # Avoid similar letters or not
+    how_many_repeat = input_handler("How many password(s) do you want to generate? [10]", low = 1, Type = "int", default = 10) # How many passwords to generate
 
     include_symbols = False if include_symbols == "n" else True # Checks symbol
     include_numbers = False if include_numbers == "n" else True # Checks number
@@ -148,9 +145,10 @@ if option == "g":
         print("I hope I can provide better passwords next time!!!")
 
     else:
+        mode = input_handler("Choose the mode of encryption: [T]ext, [I]mage, [V]oice, [M]orse ([T]/i/v/m)", options=["t", "i", "v", "m"], default="t")
         path = Path(input_handler("Enter the path where you want the password(s) to be saved", default=Path.cwd(), automate=False)).joinpath("output.Jaraare")
-        save_password(want_save, password, path)
-        print("Your password(s) have been saved in: ", Path(path).joinpath("output.Jaraare"))
+        save_password(want_save, password, path, mode)
+        print("Your password(s) have been saved in: ", Path(path))
 
 else:
     # Showing section.
