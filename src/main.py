@@ -80,10 +80,8 @@ def save_password(want_save, password, path, mode):
         for i in want_save:
             save.append(password[int(i) - 1])
 
-    passwords = encrypt_mode.Encoding(path, save).run_mode(mode)
-
-    with open(path, "a") as file: # Save encrypted passwords & keys in the choosen path
-        file.write(passwords)
+    passwords = encrypt_mode.Encoding(mode, path, save).run_mode()
+    encrypt_mode.save(mode, path, passwords) # Save the mode of encryption in the choosen path
 
 def show_password(path, mode="t"):
     '''

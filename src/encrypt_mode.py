@@ -1,19 +1,20 @@
-from turtle import mode
-
 from cryptography.fernet import Fernet
-from pathlib import Path
+from PIL import Image
+import numpy as np
+import os
 
 class Encrypt:
-    def __init__(self, path, data_list = []):
+    def __init__(self, mode, path, data_list = []):
         self.path = path
+        self.mode = mode
         self.data_list = data_list
         self.length = len(data_list)
+        self.WIDTH = 7680
+        self.HEIGHT = 4320
 
         self.key_first_section = ""
         self.key_second_section = ""
 
-        self.key = []
-        self.cipher = []
         self.to_bin = ""
         self.encrypted = ""
 
@@ -22,46 +23,73 @@ class Encrypt:
         self.passwords = []
         self.show_passwords = []
 
-    def run_mode(self, mode):
-        match mode:
+    def run_mode(self):
+        match self.mode:
             case "text" | "t":
                 return self.text_mode()
+            
             case "image" | "i":
                 return self.image_mode()
+            
             case "voice" | "v":
                 return self.voice_mode()
+            
             case "morse" | "m":
                 return self.morse_mode()
 
 class Encoding(Encrypt):
-    def __init__(self, path, data_list = []):
-        super().__init__(path, data_list)
+    def __init__(self, mode, path, data_list=[]):
+        super().__init__(mode, path, data_list)
+
+        self.encrypted_password = []
 
         for i in range(self.length):
-            self.key.append(Fernet.generate_key())
-            self.cipher.append(Fernet(self.key[i]))
+            key = Fernet.generate_key()
+            cipher = Fernet(key)
 
-            
-    def text_mode(self):
-        for i in range(self.length):
-            self.encrypted = self.cipher[i].encrypt(self.data_list[i].encode())
-            key = self.key[i].decode()
+            self.encrypted = cipher.encrypt(self.data_list[i].encode())
+            key = key.decode()
             self.encrypted = self.encrypted.decode()
 
-            self.key_first_section = key[:23]
-            self.key_second_section = key[23:]
+            match self.mode:
+                case "text" | "t":
+                    self.key_first_section = key[:23]
+                    self.key_second_section = key[23:]
+                    self.encrypted_password.append(self.key_first_section + self.encrypted + self.key_second_section)
 
-            encrypted_password = self.key_first_section + self.encrypted + self.key_second_section
+                case "image" | "i":
+                    self.encrypted_password.append((self.key_first_section + self.encrypted + self.key_second_section).encode("utf-8"))
 
-            for character in encrypted_password:
+         
+    def text_mode(self):
+        for password in self.encrypted_password:
+            for character in password:
                 self.to_bin += str(ord(character)) + "#"
+
             self.to_bin += "|"
 
         return self.to_bin
 
     def image_mode(self):
-        pass
+        combined = b"||".join(self.encrypted_password) + b"||END"
+        data = np.frombuffer(combined, dtype=np.uint8)
 
+        total_capacity = self.WIDTH * self.HEIGHT * 4
+        if len(data) + 8 > total_capacity:
+            raise ValueError("Data is too large to fit in the image.")
+
+        pixels = np.random.randint(0, 256, total_capacity, dtype=np.uint8)
+
+        data_length = len(data)
+        for i in range(8):
+            pixels[i] = (data_length >> (i * 8)) & 0xFF
+
+        pixels[8:8 + len(data)] = data
+
+        pixels = pixels.reshape((self.HEIGHT, self.WIDTH, 4))
+        image = Image.fromarray(pixels, mode="RGBA")
+
+    
     def voice_mode(self):
         pass
 
@@ -101,10 +129,52 @@ class Decoding(Encrypt):
         return self.show_passwords
     
     def image_mode(self):
-        pass
+        image = Image.open(self.path).convert("RGBA")
+        pixels = np.array(image, dtype=np.uint8).flatten()
+
+        # Read header
+        data_length = 0
+        for i in range(8):
+            data_length |= int(pixels[i]) << (i * 8)
+
+        # Extract bytes
+        raw = pixels[8:8 + data_length].tobytes()
+
+        # Split and decrypt
+        entries = raw.split(b"||")
+        entries = [e for e in entries if e and e != b"END"]
+
+        for entry in entries:
+            entry_str = entry.decode("utf-8")
+            self.key_first_section = entry_str[:23]
+            self.encrypted = entry_str[23:-21]
+            self.key_second_section = entry_str[-21:]
+
+            key = (self.key_first_section + self.key_second_section).encode()
+            cipher = Fernet(key)
+            decrypted = cipher.decrypt(self.encrypted.encode())
+            self.show_passwords.append(decrypted.decode())
+
+        return self.show_passwords
 
     def voice_mode(self):
         pass
 
     def morse_mode(self):
         pass
+
+def save(mode, path, passwords):
+    match mode:
+        case "text" | "t":
+            with open(path, "a") as file: # Save encrypted passwords & keys in the choosen path
+                file.write(passwords)
+
+        case "image" | "i":
+            passwords.save(path) # Save encrypted passwords & keys in the choosen path
+
+
+        case "voice" | "v":
+            pass
+
+        case "morse" | "m":
+            pass
