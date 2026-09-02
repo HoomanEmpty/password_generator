@@ -1,8 +1,6 @@
 from random import randint as ri
-
 from numpy import mod
 from input_handler import input_handler
-import encrypt
 from pathlib import Path
 import encrypt_mode
 
