@@ -83,12 +83,13 @@ def save_password(want_save, password, path, mode):
     passwords = encrypt_mode.Encoding(mode, path, save).run_mode()
     encrypt_mode.save(mode, path, passwords) # Save the mode of encryption in the choosen path
 
-def show_password(path, mode="t"):
+def show_password(path):
     '''
     Show passwords that save
     this function doesn't return anythings
     '''
-    passwords = encrypt_mode.Decoding(path).run_mode("text")
+    mode = encrypt_mode.get_file_type(path.joinpath("output.Jaraare"))
+    passwords = encrypt_mode.Decoding(mode, path).run_mode()
     
     for i in range(len(passwords)):
         print(f"{i + 1}_ {passwords[i]}")
@@ -144,11 +145,11 @@ if option == "g":
 
     else:
         mode = input_handler("Choose the mode of encryption: [T]ext, [I]mage, [V]oice, [M]orse ([T]/i/v/m)", options=["t", "i", "v", "m"], default="t")
-        path = Path(input_handler("Enter the path where you want the password(s) to be saved", default=Path.cwd(), automate=False)).joinpath("output.Jaraare")
+        path = Path(input_handler("Enter the path where you want the password(s) to be saved", default=Path.cwd(), automate=False))
         save_password(want_save, password, path, mode)
         print("Your password(s) have been saved in: ", Path(path))
 
 else:
     # Showing section.
-    path = Path(input_handler("Enter path your save password or contintue default", default=Path.cwd(), automate=False)).joinpath("output.Jaraare")
+    path = Path(input_handler("Enter path your save password or contintue default", default=Path.cwd(), automate=False))
     show_password(path)

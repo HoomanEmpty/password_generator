@@ -1,11 +1,13 @@
 from cryptography.fernet import Fernet
 from PIL import Image
 import numpy as np
+from pathlib import Path
 import os
+import magic
 
 class Encrypt:
     def __init__(self, mode, path, data_list = []):
-        self.path = path
+        self.path = path.joinpath("output.Jaraare") if path.is_dir() else path
         self.mode = mode
         self.data_list = data_list
         self.length = len(data_list)
@@ -58,7 +60,8 @@ class Encoding(Encrypt):
                     self.encrypted_password.append(self.key_first_section + self.encrypted + self.key_second_section)
 
                 case "image" | "i":
-                    self.encrypted_password.append((self.key_first_section + self.encrypted + self.key_second_section).encode("utf-8"))
+                    entry = key + "SPLIT" + self.encrypted
+                    self.encrypted_password.append(entry.encode("utf-8"))
 
          
     def text_mode(self):
@@ -89,6 +92,7 @@ class Encoding(Encrypt):
         pixels = pixels.reshape((self.HEIGHT, self.WIDTH, 4))
         image = Image.fromarray(pixels, mode="RGBA")
 
+        return image
     
     def voice_mode(self):
         pass
@@ -146,13 +150,10 @@ class Decoding(Encrypt):
 
         for entry in entries:
             entry_str = entry.decode("utf-8")
-            self.key_first_section = entry_str[:23]
-            self.encrypted = entry_str[23:-21]
-            self.key_second_section = entry_str[-21:]
+            key_str, encrypted_str = entry_str.split("SPLIT", 1)
 
-            key = (self.key_first_section + self.key_second_section).encode()
-            cipher = Fernet(key)
-            decrypted = cipher.decrypt(self.encrypted.encode())
+            cipher = Fernet(key_str.encode())
+            decrypted = cipher.decrypt(encrypted_str.encode())
             self.show_passwords.append(decrypted.decode())
 
         return self.show_passwords
@@ -166,11 +167,12 @@ class Decoding(Encrypt):
 def save(mode, path, passwords):
     match mode:
         case "text" | "t":
-            with open(path, "a") as file: # Save encrypted passwords & keys in the choosen path
+            with open(path.joinpath("output.Jaraare"), "a") as file: # Save encrypted passwords & keys in the choosen path
                 file.write(passwords)
 
         case "image" | "i":
-            passwords.save(path) # Save encrypted passwords & keys in the choosen path
+            passwords.save(path.joinpath("output.png")) # Save encrypted passwords & keys in the choosen path
+            os.rename(path.joinpath("output.png"), path.joinpath("output.Jaraare")) # Rename the file to output.Jaraare
 
 
         case "voice" | "v":
@@ -178,3 +180,13 @@ def save(mode, path, passwords):
 
         case "morse" | "m":
             pass
+
+def get_file_type(path):
+    mime = magic.from_file(path, mime=True)
+
+    if mime.startswith("image/"):
+        return "image"
+    elif mime.startswith("text/"):
+        return "text"
+    else:
+        return "other"
